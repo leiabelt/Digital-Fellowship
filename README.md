@@ -1,2 +1,1 @@
-# Digital-Fellowship
-Repository for summer fellowship
+# Leia-Belt-Summer-Proj
