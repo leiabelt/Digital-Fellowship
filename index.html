@@ -4,40 +4,33 @@
 <head>
   <meta charset=utf-8 />
   <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui' />
-  <title>Morbidity Rates for Black Mothers</title>
-  <!-- Leaflet CSS -->
+
+  <title>Maternal Morbidity and Infant Mortality for Black Women and Children</title>
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-  <!-- Compare CSS -->
-  <link rel="stylesheet" href="dist/leaflet-compare.css" />
-  <!-- Link to css for the buttons -->
-  <link rel="stylesheet" href="dist/easy-button.css">
-  <link rel='stylesheet' href='https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css'>
   <style>
+    /* page body */
     body {
       margin: 0;
       padding: 0;
     }
-
+    /* map dimensions */
     #map {
-      position: absolute;
-      top: 0;
-      bottom: 0;
       width: 100%;
+      height: 100vh;
     }
-
     /* style header */
     header {
       position: fixed;
       top: 10px;
       left: 10px;
-      width: 500px;
+      width: 570px;
       height: 65px;
       background-color: rgba(255, 255, 255, 1.0);
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
       border-radius: 3px;
       z-index: 800;
     }
-
     /* the text inputs */
     h1 {
       color: black;
@@ -50,7 +43,6 @@
       font-weight: bold;
       text-transform: uppercase;
     }
-
     h2 {
       font-size: 12px;
       color: black;
@@ -61,92 +53,54 @@
       margin-right: 0;
       font-weight: normal;
     }
-
     /* define legend styles */
-    .povLegend {
+    .povLegend, .matLegend, .infLegend {
       line-height: 18px;
       color: #555;
       padding: 6px 8px;
       background-color: rgba(255, 255, 255, 0.5);
     }
-
-    .povLegend i {
+    .povLegend i, .matLegend i, .infLegend i {
       width: 18px;
       height: 18px;
       float: left;
       margin-right: 8px;
       opacity: 0.7;
     }
-
-    .matLegend {
-      line-height: 18px;
-      color: #555;
-      padding: 6px 8px;
-      background-color: rgba(255, 255, 255, 0.5);
-    }
-
-    .matLegend i {
-      width: 18px;
-      height: 18px;
-      float: left;
-      margin-right: 8px;
-      opacity: 0.7;
-    }
-
     /* the zoom control */
     .leaflet-top {
       bottom: 0;
     }
-
     .leaflet-top .leaflet-control-zoom {
       top: 75px;
       left: 0px;
     }
-
-    /* Arrange buttons horizontally */
-    .easy-button-button {
-      display: inline-block !important;
-    }
-
-    /* Style button bar */
-    #myeasybar {
-      box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.3);
-      border: none;
-      border-radius: 3px;
-      z-index: 10;
-    }
-    /* Style buttons in bar */
-    #myeasybar button {
-      width: 35px;
-      height: 30px;
-      display: inline-block;
-      border: none;
-      border-radius: 2px;
-      box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.3);
-    }
-
   </style>
 </head>
 
 <body>
   <!-- header -->
   <header>
-    <h1>Morbidity Rates for Black Mothers Compared<br>to Poverty Rates for Black Residents, 2020</h1><br>
+    <h1>Black Maternal Morbidity and Infant Mortality<br>Compared to Poverty Rates for Black Residents, 2020</h1><br>
     <h2>Map by Leia Belt; Data courtesy of the CDC and US Census</h2>
   </header>
+  <!-- the map -->
   <div id='map'></div>
-  <!-- Leaflet JS -->
+  <!-- leaflet js  -->
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-  <!-- Leaflet-Compare JS -->
-  <script src="dist/leaflet-compare.js"></script>
   <!-- Add a link to the jQuery JavaScript library so you can leverage ajax methods to load your data -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <!-- for button support -->
-  <script src='dist/easy-button.js'></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+  <!-- leaflet side by side  -->
+  <script src="dist/leaflet-side-by-side.min.js"></script>
+
   <script>
-    // define the map and center it on coordinates for lower 48 states
-    const map = L.map('map').setView([38, -97], 5);
+    // define the map and center it on the [38, -95] lat, lng coordinates for the lower 48
+    var map = L.map('map').setView([38, -95], 5);
+
+    // create a left and right map pane for comparison
+    map.createPane('left');
+    map.createPane('right');
 
     // add a base map to the map
     const cartoLight = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -154,29 +108,6 @@
       subdomains: 'abcd',
       maxZoom: 20
     }).addTo(map);
-
-    // Add a scale bar
-    L.control.scale({
-      position: 'topright' // Position the scale bar at the top-righ corner
-    }).addTo(map);
-
-    // create a button to take users to map 2
-    var map2button = L.easyButton({
-      id: 'map2button',
-      position: 'topright',
-      states: [{
-        stateName: 'change-map',
-        icon: '<strong>2</strong>',
-        title: 'Go to Map 2: Infant Mortality Rates for Black Children',
-        onClick: function(e) {
-          window.location.href = 'index2.html';
-        }
-      }]
-    }).addTo(map);
-
-    // create the right and left panes for comparison
-    map.createPane("left");
-    map.createPane("right");
 
     // Add a function to style the counties by the poverty rate for black residents
     function getColorBPov(d) {
@@ -198,13 +129,25 @@
         'rgba(211,211,211,25)'; // supported by Microsoft Edge
     };
 
+    // Add a function to style the counties by the infant mortality rate for black children
+    function getColorBInfMort(d) {
+      return d > 17.6 ? '#006837' :
+        d > 13.8 ? '#31a354' :
+        d > 10.8 ? '#78c679' :
+        d > 8.4 ? '#c2e699' :
+        d >= 0 ? '#ffffcc' :
+        'rgba(211,211,211,25)'; // supported by Microsoft Edge
+    };
+
     // use jquery to load migration GeoJSON data
     $.when(
       $.getJSON("data/Black_Poverty_Rates_County.json"),
-      $.getJSON("data/Black_Maternal_Morbidity_2020.geojson")
+      $.getJSON("data/Black_Maternal_Morbidity_2020.geojson"),
+      $.getJSON("data/Black_Infant_Mortality_2017_2019.geojson")
       // when the files are done loading,
       // identify them with names and process them through a function
-    ).done(function(bpov, bmatmorb) {
+    ).done(function(bpov, bmatmorb, binfmort) {
+
       // initiate a leaflet GeoJSON layer with L.geoJson, feed it the poverty data, and add to the map
       const bpov2020 = L.geoJson(bpov, {
         pane: "left",
@@ -291,8 +234,62 @@
         }
       }).addTo(map);
 
-      // define and add the side-by-side comparison control
-      const compare = L.control.compare([bpov2020], [bmatmorb2020]).addTo(map);
+      // initiate a leaflet GeoJSON layer with L.geoJson, feed it the infant mortality data, and add to the map
+      const binfmort2019 = L.geoJson(binfmort, {
+        pane: "right",
+        // style the layer
+        style: function(feature) {
+          return {
+            fillColor: getColorBInfMort(feature.properties["deaths_p1000"]), // return the polygon fill color defined by the getColorBInfMort() function
+            fillOpacity: 0.5, // give the polygon fill a 50% opacity
+            color: "gray", // set the outline color to gray
+            weight: 0.5, // give the outline a weight
+            opacity: 0.7 // give the outline 70% opacity
+          };
+        },
+        // iterate through each feature
+        onEachFeature: function(feature, layer) {
+          // on mouseover...
+          layer.on("mouseover", function() {
+            // reset the layer's style
+            layer.setStyle({
+              fillOpacity: 0.9,
+              opacity: 1.0
+            })
+          });
+          // on mouseout...
+          layer.on("mouseout", function() {
+            // return the layer to the original style
+            layer.setStyle({
+              fillOpacity: 0.5,
+              opacity: 0.7
+            })
+          });
+          // define the popup content
+          var popup = feature.properties.Name + "<br>Infant Mortality/1000 births: " + feature.properties.death_p1000_string;
+          // bind tooltip content to each layer
+          layer.bindTooltip(popup).openTooltip();
+        }
+      });
+
+      // define the layers for the control
+      var overlays = {
+        'Maternal Morbidity Rate': bmatmorb2020,
+        'Infant Mortality Rate': binfmort2019
+      };
+
+      // add the layer control
+      const layerControl = L.control.layers(overlays, null, {
+        collapsed: false
+      }).addTo(map);
+
+      // Add a scale bar
+      L.control.scale({
+        position: 'topright' // Position the scale bar at the top-righ corner
+      }).addTo(map);
+
+      // sideBySide
+      L.control.sideBySide(bpov2020, [bmatmorb2020, binfmort2019]).addTo(map);
 
       // define a Leaflet control for the legend and position it at the bottom-left corner of the map
       const povLegend = L.control({
@@ -344,8 +341,53 @@
       };
       // add the legend to the map
       matLegend.addTo(map);
-    });
 
+      // define a Leaflet control for the legend and position it at the bottom-right corner of the map
+      const infLegend = L.control({
+        position: 'bottomright'
+      });
+
+      // add content to the legend
+      infLegend.onAdd = function(map) {
+        // define a div inside the legend
+        const div = L.DomUtil.create('div', 'info infLegend'),
+          // in addition to grades corresponding to our choropleth ranges
+          grades = [-0.1, 8.4, 10.8, 13.8, 17.6];
+        // append a title to the div in the legend
+        div.innerHTML += '<b>Infant Mortality<br>per 1000 Births<b><br><br>';
+        // loop through our intervals and generate a label with a colored square for each interval
+        for (var i = 0; i < grades.length; i++) {
+          const num = grades[i]+0.1;
+          div.innerHTML +=
+            '<i style="background:' + getColorBInfMort(grades[i] + 1) + '"></i> ' +
+            (Math.round((grades[i]+0.1) * 10) / 10) + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+        }
+        // return the div
+        return div;
+      };
+      // add the legend to the map
+      infLegend.addTo(map);
+      // hide this legend initially
+      $('.infLegend').hide();
+
+      // when there is a base layer change...
+      map.on('baselayerchange', function() {
+        // if the map has the infant mortality layer...
+        if (map.hasLayer(binfmort2019)) {
+          // show the infant mortality legend and...
+          $('.infLegend').show();
+          // hide the maternal morbidity legend
+          $('.matLegend').hide();
+        // if the map has the maternal morbidity layer...
+        } if (map.hasLayer(bmatmorb2020)) {
+          // show the maternal morbidity legend and...
+          $('.matLegend').show();
+          // hide the infant mortality legend
+          $('.infLegend').hide();
+        }
+      });
+
+    });
   </script>
 </body>
 
