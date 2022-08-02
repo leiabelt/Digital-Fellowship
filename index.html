@@ -101,12 +101,26 @@
     // create a left and right map pane for comparison
     map.createPane('left');
     map.createPane('right');
+    // create a map pane for the labels
+    map.createPane('labels');
+    // give it a z index of 600 (this keeps it over the map layers, but under the tooltip)
+    map.getPane('labels').style.zIndex = 600;
+    // disable pointer events on the labels pane so that the map layers underneath register them instead
+    map.getPane('labels').style.pointerEvents = 'none';
 
     // add a base map to the map
-    const cartoLight = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    const cartoLight = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+    	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    	subdomains: 'abcd',
+    	maxZoom: 20
+    }).addTo(map);
+
+    // add map labels to the labels pane
+    const CartoLightLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+    	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      pane: 'labels',
       subdomains: 'abcd',
-      maxZoom: 20
+    	maxZoom: 20
     }).addTo(map);
 
     // Add a function to style the counties by the poverty rate for black residents
