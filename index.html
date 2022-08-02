@@ -8,6 +8,8 @@
   <title>Maternal Morbidity and Infant Mortality for Black Women and Children</title>
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <!-- for grouped overlay control -->
+  <link rel="stylesheet" href="dist/leaflet.groupedlayercontrol.min.css" />
   <style>
     /* page body */
     body {
@@ -77,7 +79,7 @@
     }
 
     .leaflet-tooltip-pane   {
-      z-index: 650; 
+      z-index: 650;
     }
   </style>
 </head>
@@ -92,9 +94,10 @@
   <div id='map'></div>
   <!-- leaflet js  -->
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <!-- for grouped overlay control -->
+  <script src="dist/leaflet.groupedlayercontrol.min.js"></script>
   <!-- Add a link to the jQuery JavaScript library so you can leverage ajax methods to load your data -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
   <!-- leaflet side by side  -->
   <script src="dist/leaflet-side-by-side.min.js"></script>
 
@@ -200,9 +203,9 @@
           // define the popup content
           var popup;
           if (feature.properties.Blk_Pov_Perc == -1) {
-            var popup = feature.properties.Full_Name + "<br>Poverty Rate: insufficient data";
+            var popup = feature.properties.Full_Name + "<br>Black Poverty Rate: insufficient data<br>Black Population: " + feature.properties.Blk_Pop;
           } else {
-            var popup = feature.properties.Full_Name + "<br>Poverty Rate: " + feature.properties.Blk_Pov_Perc + "%";
+            var popup = feature.properties.Full_Name + "<br>Black Poverty Rate: " + feature.properties.Blk_Pov_Perc + "%<br>Black Population: " + feature.properties.Blk_Pop;
           }
           // bind tooltip content to each layer
           layer.bindTooltip(popup).openTooltip();
@@ -290,16 +293,26 @@
         }
       });
 
-      // define the layers for the control
-      var overlays = {
-        'Maternal Morbidity Rate': bmatmorb2020,
-        'Infant Mortality Rate': binfmort2019
+      // define the grouped layers
+      const groupedOverlays = {
+        "Socioeconomic Variables": {
+          "Black Poverty Rate": bpov2020
+        },
+        "Health Outcomes": {
+          "Maternal Morbidity Rate": bmatmorb2020,
+          "Infant Mortality Rate": binfmort2019
+        }
       };
 
-      // add the layer control
-      const layerControl = L.control.layers(overlays, null, {
+      // define the grouped layer control options
+      const options = {
+        // Make these groups exclusive (use radio inputs)
+        exclusiveGroups: ["Socioeconomic Variables", "Health Outcomes"],
         collapsed: false
-      }).addTo(map);
+      }
+
+      // define and add the layer control
+      const layerControl = L.control.groupedLayers(null, groupedOverlays, options).addTo(map);
 
       // Add a scale bar
       L.control.scale({
